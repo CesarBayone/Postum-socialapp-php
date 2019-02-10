@@ -1,0 +1,65 @@
+<?php
+
+class User {
+    private $db;
+// Initialize the Database
+    public function __construct(){
+        $this->db = new Database;
+    }
+
+//Register User
+
+    public function register($data){
+        $this->db->query("INSERT INTO users (name, email, password) VALUES(:name, :email, :password)");
+        //Binding values
+        $this->db->bind(":name", $data["name"]);
+        $this->db->bind(":email", $data["email"]);
+        $this->db->bind(":password", $data["password"]);
+
+    if ($this->db->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+    }
+
+//Logged User
+
+public function login($email, $password){
+    $this->db->query("SELECT * FROM users Where email = :email");
+    $this->db->bind(":email", $email);
+
+    $row = $this->db->single();
+    $hashed_password = $row->password;
+
+    if(password_verify($password, $hashed_password)){
+        return $row;
+    } else {
+        return false;
+    }
+}
+
+// Find user by ID
+    public function findUserByEmail($email){
+        $this->db->query("SELECT * FROM users Where email = :email");
+         //Binding values
+        $this->db->bind(":email", $email);
+
+    $row = $this->db->single();
+    //Check rows
+    if ($this->db->rowCount() > 0) {
+        return true;
+    } else{
+        return false;
+    }
+     }
+     public function getUserById($id){
+        $this->db->query("SELECT * FROM users Where id = :id");
+         //Binding values
+        $this->db->bind(":id", $id);
+
+    $row = $this->db->single();
+    //Check rows
+    return $row;
+     }
+}
